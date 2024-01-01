@@ -1,0 +1,295 @@
+Angular is a js application which allows you to create reactive Single-Page-Application.
+
+Updating NodeJS:
+
+	Go to nodejs.org and download the latest version - uninstall (all) installed versions on your machine first.
+
+Updating npm:
+
+	Run npm install -g npm  (sudo  is only required on Mac/ Linux)
+
+	Updating the CLI
+
+	npm uninstall -g angular-cli @angular/cli 
+
+	npm cache clean 
+
+	npm install -g @angular/cli : this download angular cli from node pkg manager repository and install it to machine.
+	
+To run angular app:-
+	
+	ng serve 
+	ng serve -o
+		
+	
+If cmd prompts error message regarding typescript higher version.
+	npm install typescript@">=3.4.0 and <3.6.0"
+	
+CLI creates	root component of our application i.e. app component.
+
+*Installing Bootstrap
+  npm install --save bootstrap@3  => The @3  is important!
+  You'll have an angular.json  file [instead of an .angular-cli.json  file]. 
+  In that file, you still need to add Bootstrap to the styles[]  array , but the path should be                                       node_modules/bootstrap/dist/css/bootstrap.min.css ,   
+  NOT ../node_modules/bootstrap/dist/css/bootstrap.min.css . The leading ../  must not be included.
+
+main.ts 
+	Code that start angular application.
+	Contains code where we pass appmodule to the bootstarpModule(), so it bootstarp the application.
+	Contains code for enableProdMode().
+	
+index.html
+	Contains <app-root></app-root> in the file.
+	Selector is defined in app.component.ts.
+	and template is defined in app.component.html.
+	
+Angular in the end is a JS framework, changing your DOM('HTML') at runtime!.
+
+
+
+**Component : - 
+	
+To generate component through CLI
+
+	ng generate component nameofcomponent or ng g c nameofcomponent
+	
+	each component has its won code, its own styling, or business logic and template.
+	it allows you to split your complex application, your complex wegpages into reusable parts.
+	You can use component more than once.
+	
+	
+**App Module : - 
+	its bundle of functionlities of our app and it basically gives angular the information which feature does my app have and use.
+	Its an empty typescript class as our component.
+	@NgModule decorator added  which is also imported from angular/core.
+	declarations, imports, providers and bootstarp are properties of @NgModule.
+	When we add new component in angular app, we do register this into property declarations array of @NgModule.
+	imports property of @NgModule allow to add other module to existing module ex. FormsModule,HttpModule...
+	
+	
+Styles : - it takes array as input i.e. can define multiple style sheets.
+style : - define inline style in string format in [].
+
+Define and declare component in three ways :-
+ 			<app-servers></app-servers> 	<!--'app-servers'  Element selector-->
+            <div app-servers></div>     	<!-- '[app-servers]' Attrubute selector-->
+            <div class="app-servers"></div> <!-- '.app-servers' Class selector -->	
+	
+	
+**Databinding 
+Communication between Typescript code(Business logic) and Template(HTML)
+*Output data i.e from Typescript to HTML
+  1.String Interpolation [{{data}}]
+  2.Property Binding ([property]="data")
+
+*React to Events i.e from HTML to Typescript
+  1.Event Binding  (event)="expression" example, (onClick) = "MethodName()"
+
+Combination both is Two way data binding
+   [(ngModel)] = "data" 
+	
+*Use string interpolation , if you want to Output something in your template print some text to it	
+*Use property binding, if you want to change some property of a HTML element or directive or component.	
+
+*Bindable Properties and Events
+How do you know to which Properties or Events of HTML Elements you may bind? You can basically bind to all Properties and Events - a good idea is to console.log()  the element you're interested in to see which properties and events it offers.
+Important: For events, you don't bind to onclick but only to click (=> (click)).
+The MDN (Mozilla Developer Network) offers nice lists of all properties and events of the element you're interested in. Googling for YOUR_ELEMENT properties  or YOUR_ELEMENT events  should yield nice results.	
+
+
+*Passing and using data with event binding:-
+ -$event object to fetch the event data.
+
+Html : -
+<input  type="text" (input) ="onUpdateServer($event)" />
+{{ serverName }}
+Typescript : -
+ onUpdateServer(event : Event){
+    this.serverName = (<HTMLInputElement>event.target).value;
+  }
+
+**Two-Way-Binding
+FormsModule is Required for Two-Way-Binding.
+For Two-Way-Binding to work, you need to enable the ngModel  directive. 
+This is done by adding the FormsModule  to the imports[]  array in the AppModule.
+
+You then also need to add the import from @angular/forms
+in the app.module.ts file:
+
+import { FormsModule } from '@angular/forms'; 
+
+
+**Directives
+ -are instructions in the DOM. like component are  kind of such instructions in the DOM.
+   Once we place the selector of our component somewhere in our templates,
+   at this point of time we're instructing Angular to add the content of our component template and the
+   business logic in our TypeScript code in this place where we use the selector.
+  This was our instruction, Angular please add our component in this place and indeed components are directives but directives with a template.
+  
+ 
+**Built-in directives.
+   1.Structural directive :-
+         1.*ngIf
+             The star is required because ngIf is a structural directive which means it changes the structure
+             of our DOM, it either adds this element or it doesn't add it.
+             
+             Example for ngIf and else : -
+                  <p *ngIf="serverCreated; else noserver">Server was created, my server name is {{ serverName }}</p>
+                  <ng-template #noserver> --noserver is variable created.
+                        <p>No server created.</p>
+                  </ng-template>
+
+          2.*ngFor 
+          	<app-server *ngFor="let server of servers; let i = index"   "></app-server>
+
+   2. Attribute directive :-
+              These directive do not add or remove elements unlike structural directive.
+              They only change the element they were placed in.
+          1.ngStyle -
+              allows us to dyanamically change the style.	
+              Example :-
+              <p [ngStyle]="{backgroundColor : getColor()}">{{ 'Server' }} with {{ serverId }} is {{ getServerStatus() }}</p>
+
+
+          2.ngClass : - 
+              allow to remove and add css classes when certain condition is true.
+              Example :-
+              <p [ngStyle]="{backgroundColor : getColor()}" [ngClass]="{online : serverStatus === 'online'}" >{{ 'Server' }} with                         {{serverId }} is     {{ getServerStatus() }}</p> 
+  
+
+
+**Components :--
+by default all the properties of components are accessible inside the component not by outside component.
+So if you want to expose some property explicitly to outside or other component i.e. from parent to child - you need to add decorator @Input() propertyname which will be imported from angular.core  
+
+** Binding to custom properties**
+
+For example : - in below example we are passing data from app-component(parent) to server-element(child) component. 
+server-element-component.html : -
+      <div
+        class="panel panel-default">
+        <div class="panel-heading">{{ element.name }} {{ element.content }} {{ element.type }}</div>        
+        </div>
+      </div>
+
+server-element-component.ts : - 
+
+      import { Component, Input } from "@angular/core";
+
+      @Component({
+          selector : 'app-server-element',
+          templateUrl : './server-element.component.html'
+      })
+      export class ServerElementComponent{
+
+          @Input() element :{type:string,name:string,content:string};
+
+      } 
+
+app-component.html :-
+   <div class="col-xs-12">
+      <app-server-element *ngFor="let element of serverElements" 
+                            [element]="element"></app-server-element>
+    </div>
+
+app-component.ts
+    export class AppComponent {
+      serverElements = [{type:'server', name :'testname', content : 'testcontent'}];
+    }
+
+**assigning alias to custom properties**
+
+app-component.html :-
+   <div class="col-xs-12">
+      <app-server-element *ngFor="let element of serverElements" 
+                            [srvElement]="element"></app-server-element>
+    </div>
+
+server-element-component.ts : - 
+
+     export class ServerElementComponent{
+          @Input('srvElement') element :{type:string,name:string,content:string};
+      }
+
+
+
+**Binding to custom events** 
+((Child to parent Communication))
+what if we have a child component and something changes in there and we want
+to inform our parent component.
+
+app-component.html :-
+    <div class="row">
+        <app-cockpit (serverCreated)="onServerAdded($event)"></app-cockpit>
+    </div>
+
+
+app-component.ts : - 
+
+      onServerAdded(serverData:{serverName:string,serverContent:string}){
+          this.serverElements.push({
+            type:'server', 
+            name :serverData.serverName,
+            content : serverData.serverContent
+          });
+        }
+cockpit.component.html :-
+
+    <button
+          class="btn btn-primary"
+          (click)="onAddServer()">Add Server</button>
+
+cockpit.component.ts : -
+
+      export class CockpitComponent{
+
+          @Output() serverCreated = new EventEmitter<{serverName:string,serverContent:string}>();
+
+          newServerName = '';
+          newServerContent = '';
+
+          onAddServer(){
+              this.serverCreated.emit({ serverName : this.newServerName,serverContent :this.newServerContent });
+          }
+      }
+
+
+** Local references in templates (using # you can define it.)
+      <input type="text" class="form-control" [(ngModel)]="newServerName">
+      :-
+        <input type="text" class="form-control" #newServerNameInput>
+
+You can use it in .ts file like,
+    onAddServer(nameInput : HTMLInputElement)
+    {
+      console.log(nameInput.value);
+    }
+
+**@ViewChild() syntax**
+    In Angular 8+, the @ViewChild() syntax which you'll see in the next lecture needs to be changed slightly:
+
+    Instead of:
+
+    @ViewChild('serverContentInput') serverContentInput: ElementRef;
+    use
+
+    @ViewChild('serverContentInput', {static: true}) serverContentInput: ElementRef;
+    The same change (add { static: true } as a second argument) needs to be applied to ALL usages of @ViewChild() (and also @ContentChild() which you'll learn about later) IF you plan on accessing the selected element inside of ngOnInit().
+
+    If you DON'T access the selected element in ngOnInit (but anywhere else in your component), set static: false instead!
+
+    If you're using Angular 9, you only need to add { static: true } (if needed) but not { static: false }.
+
+
+
+
+**LifeCycle Hooks**
+
+      ngOnChanges           -   Called after a bound input property changes
+      ngOnInit              -   Called once the component is initialized
+      ngDoCheck             -   Called during every change detection run
+      ngAfterContentInit    -   Called after content (ng-content) has been projected into view
+      ngAfterContentChecked -   Called every time the projected content has been checked
+      ngAfterViewInit       -   Called after the component’s view (and child views) has been initialized
+      ngAfterViewChecked    -   Called every time the view (and child views) have been checked
+      ngOnDestroy           -   Called once the component is about to be destroyed
