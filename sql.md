@@ -1488,3 +1488,41 @@ FROM Employees;
 In this SELECT statement, the function `CalculateTotalSalary` is used to calculate the total salary for each employee based on their hourly rate and hours worked.
 
 ---
+
+Performance Question:
+
+## If a SQL query with multiple joins is experiencing performance issues, there are several strategies and optimizations you can consider to improve its efficiency. Here are some general tips:
+
+### Indexing:
+- Ensure that the columns involved in join conditions and WHERE clauses are indexed.
+- Primary and foreign key columns should be indexed, as well as columns used in join and filter conditions.
+
+### Optimize Join Conditions:
+- Use appropriate data types and ensure that the columns used for joining are indexed
+- Avoid using functions on columns in join conditions, as this can prevent the use of indexes
+
+### Use Explicit JOIN Syntax:
+
+- Use the explicit JOIN syntax (INNER JOIN, LEFT JOIN, etc.) instead of implicit joins (comma-separated tables). 
+- Explicit joins make the query more readable and can sometimes be optimized better by the database engine.
+
+### *Avoid SELECT:
+- Instead of selecting all columns using SELECT *, explicitly list only the columns you need. 
+- This reduces the amount of data transferred and can improve query performance.
+
+### Limit the Result Set:
+- If possible, limit the result set by specifying only the columns and rows you need
+- This can reduce the amount of data processed and retrieved.
+
+### Avoid Subqueries if Possible:
+- Consider rewriting subqueries as joins or using other optimization techniques. 
+- Subqueries can sometimes be less efficient than other approaches.
+
+### Analyze Execution Plan:
+- Use tools to analyze the query execution plan. 
+- This helps identify which parts of the query are resource-intensive and may suggest where indexes or other optimizations are needed.
+
+### Database Statistics:
+- Ensure that the database statistics are up-to-date. 
+- Outdated statistics can lead to suboptimal query plans.
+- It helps the query optimizer make informed decisions, leading to efficient execution plans and improved overall database performance.
