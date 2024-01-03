@@ -74,9 +74,26 @@ public class Customer
 ## LINQ vs EF
 
 Linq:
-- 
-- 
-- 
+- It only operates with the help of the SQL Server Database.	
+- It supports one to one mapping between entity classes and the relational tables.
+- It maintains a relation by creating a .dbml file.
+- It does not support complex types.
+- It cannot generate a database by using the model.
+- It enables users to query the data with DataContext.
+- It contains a tightly coupled mechanism.	
+- It is mainly used for faster application developments with SQL Server.
+
+EF:
+- It has various databases, such as SQL Server, MYSQL, Oracle, DB2, etc.
+- It supports one to one, one to many, and many to many mapping types between the entity classes and the relational tables.
+- It first creates the .edmx file. After that, it maintains a relation using three types of files: .ssdl, .msl and .csdl.
+- It supports complex types.
+- It can generate a database using the model.
+- It allows users to query the data with DbContext, ObjectContext, and EntitySQL.
+- It contains a loosely coupled mechanism.
+- It is primarily used for faster application developments using SQL Server and other databases like MYSQL, Oracle, DB2, etc.
+
+
 
 
 
