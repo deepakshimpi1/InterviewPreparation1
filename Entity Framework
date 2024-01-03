@@ -93,11 +93,9 @@ EF:
 - It contains a loosely coupled mechanism.
 - It is primarily used for faster application developments using SQL Server and other databases like MYSQL, Oracle, DB2, etc.
 
+## Conceptual Model?
+- The conceptual model is usually defined as the model class that consists of relationships. 
+- This type of model remains independent of the database structure.
 
-
-
-
-
-
-
-
+## Storage Model?
+- The storage model is usually explained as the database design model that consists of database tables, stored procs, views, and keys with relationships.
