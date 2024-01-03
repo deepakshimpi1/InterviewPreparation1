@@ -1176,3 +1176,21 @@ const appRoutes:Routes = [
 })
 export class AppModule{}
 ```
+---
+## RxJS Subjects
+
+Reference: https://www.javatpoint.com/rxjs-subjects
+
+- An RxJS Subject is like an Observable. It is a special type of Observable that allows values to be multicasted to many Observers
+- Subjects are like EventEmitters: they maintain a registry of many listeners
+- An RxJS subject can be subscribed to, just like we usually do with Observables. It also has methods such as next(), error() and complete(), which we have already seen and used in our Observable creation function.
+- The main difference between an Observable and a Subject is that a plain Observable by default is `unicast`. It means that each `subscribed Observer owns an independent execution of the Observable`. On the other hand, Subjects are `multicast`. A Subject is like an Observable, but it can multicast to many Observers.
+
+### Types of RxJS Subjects
+
+`Subject` - This is the standard RxJS Subject. It doesn't have any initial value or replay behaviour.
+`BehaviorSubject` - This variant of RxJS subject requires an initial value and emits its current value (last emitted item) to new subscribers.
+`ReplaySubject` - This variant of RxJS subject is used to emit a specified number of last emitted values (a replay) to new subscribers.
+`AsyncSubject` - The AsyncSubject emits the latest value to observers upon completion.
+
+---
