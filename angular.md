@@ -92,22 +92,27 @@ Here are the main lifecycle hooks in Angular:
 4. ngAfterContentInit():
 
     - This hook is called once after the component's content has been initialized.
+    - Respond after Angular projects external content into the component's view
     - It is used when a component has projected content (content projection using <ng-content>).
+    - Called once after the `first ngDoCheck()`.
 
 5. ngAfterContentChecked():
 
     - This hook is called after every check of the component's content.
     - It is used for additional checks or operations after the content is updated.
+    - Called after ngAfterContentInit() and every subsequent ngDoCheck().
 
 6. ngAfterViewInit():
 
     - This hook is called once after the component's view and its child views are initialized.
     - It is often used when you need to `interact with the DOM or perform operations that depend on the component's view`.
+    - Called once after the first ngAfterContentChecked()
 
 7. ngAfterViewChecked():
 
     - This hook is called after every check of the component's view and its child views.
     - It can be used for additional checks or operations after the view is updated.
+    - Called after the ngAfterViewInit() and every subsequent ngAfterContentChecked()
 
 8. __ngOnDestroy():__
 
