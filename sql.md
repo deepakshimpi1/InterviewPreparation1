@@ -1526,3 +1526,88 @@ Performance Question:
 - Ensure that the database statistics are up-to-date. 
 - Outdated statistics can lead to suboptimal query plans.
 - It helps the query optimizer make informed decisions, leading to efficient execution plans and improved overall database performance.
+
+---
+
+latest PG-15
+---------------------------
+create temp table_table
+(
+	a intger
+)
+---------------------------
+Materlized View: Physical storage data
+Used for pre computation scnerio
+
+Use case:
+Our director has requirement to he wanted to see data in terms of graph and detail format in tablu. 
+
+As it had millions of records and the requirement was not for real time data.
+So we created MV and added data from all past day and added nightly trigger to refresh the MV to insert new day data.
+
+This Tableu report to show all the client request 
+which has total transaction for each clients against search, item and detail request.
+
+---------------------------
+
+
+explain
+observe query
+see whether seq scan(full table scan) or index scan
+
+seq scan - Full table scan
+Index scan - Index column scan
+---------------------------
+to see explain:
+
+Explain
+select * from table;
+
+Want to see more detail then,
+
+Explain analyze
+select * from table;
+---------------------------
+if we want to gather stats from table then use below command;
+
+> analyze table_name
+-------
+
+if query is returning the rows and takes time,
+
+You can partition a table based on some column value.
+Ex. If your table contain year then partition your table based on year column value so that it will divide your main table into sub part based on year.
+
+When you query it will select the data from partion table instaed of scanning all the records.
+
+-----------
+Monitoring implemeted to check the long running/idle/blocking session on database using pg internal tables
+
+Postgres internal table: 
+pg_stats_acitivity
+
+
+-----------------------
+when we delete a row then it keeps records in memory and hold an memory
+when we truncate a table then it dletes everything and free up the memory
+
+Vaccume - if delete row from table then it deletes logically but it is present in memory. so after delete when you select then you will not get deleted record
+
+so if you want to remove memory then run Vaccum on table.
+
+
+Trunc : DDL because it will clean up memory
+-----------------------------------------
+trigger or proc
+
+trigger are events based, we should not write application logic
+only for audit
+
+-----------------------------------------
+Isolation level:--
+
+Read committed:
+user can read only committed records.
+
+read uncommitted: When one thread is inserting the data, you can select inserted rows before commit using read committed isolation level.
+
