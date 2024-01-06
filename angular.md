@@ -1240,7 +1240,7 @@ data.subscribe(d=>console.log(d))
 ```
 - As we know observables are unicast. so if we check network tab for above code you will see 2 network calls.
 - Ideally it should have one http call, does not matter how many subscriber.
-- In below example, using subject it will convert observables behaviour from unicast to multicast
+- In below example, using subject it will convert observables behaviour from unicast to multicast.
 ```typescript
 const subject = new Subject();
 const data = ajax('URL:');
@@ -1250,4 +1250,28 @@ subject.subscribe(d => console.log(d));
 
 const result = data.subscribe(subject);
 ```
+- Above example will make only one http call.
+---
 
+## BehavoiurSubject
+- It is kind of subject that it will share single execution for every subscriber.
+- A subject does not hold a value.
+- A BehaviourSubject holds one value. When it is subscribed it emits the value immediately.
+```typescript
+//Subject
+const subject = Subject();
+subject.subscribe(d=>console.log(1))
+
+// Bevaiour subject
+const bSubject = new BehaviorSubject<number>(12);
+bSubject.subscribe(d=> console.log('Called:' ${d}));
+
+//Output
+Called: 12
+```
+- In case of Subject, subscriber will not notify until and unless we emit the value using .next method.
+- BS holds the initial value, subscriber will get notify with the default value.
+- If it's not initial vlaue then all subscriber will get last emitted value incase of BS.
+```typescript
+
+```
