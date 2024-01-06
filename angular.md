@@ -1188,9 +1188,10 @@ Reference: https://www.javatpoint.com/rxjs-subjects
 
 ### Types of RxJS Subjects
 
-`Subject` - This is the standard RxJS Subject. It doesn't have any initial value or replay behaviour.
-`BehaviorSubject` - This variant of RxJS subject requires an initial value and emits its current value (last emitted item) to new subscribers.
-`ReplaySubject` - This variant of RxJS subject is used to emit a specified number of last emitted values (a replay) to new subscribers.
-`AsyncSubject` - The AsyncSubject emits the latest value to observers upon completion.
+- `Subject` - This is the standard RxJS Subject. It doesn't have any initial value or replay behavior.
+- `BehaviorSubject` - This variant of RxJS subject requires an initial value and emits its current value (last emitted item) to new subscribers.
+- `ReplaySubject` - This variant of RxJS subject is used to emit a specified number of last emitted values (a replay) to new subscribers.
+- `AsyncSubject` - The AsyncSubject emits the latest value to observers upon completion.
 
 ---
+

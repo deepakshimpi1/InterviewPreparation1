@@ -210,7 +210,7 @@ No.|Static|Singleton
 
 Exmaple: https://www.youtube.com/watch?v=z47aJGe7jR4&list=PL6n9fhu94yhUbctIoxoVTrklN3LMwTCmd&index=10
 
-```
+```csharp
 using System;
 
 // Abstract Factory
@@ -325,3 +325,163 @@ class Program
 }
 ```
 - In this C# example, we have interfaces for the abstract factory (IShapeFactory), abstract products (ICircle and IRectangle), and their concrete implementations. The client code (Client) can create and draw shapes using any factory, and the product instances are independent of the concrete factory used to create them.
+
+---
+
+## Facade Pattern:
+
+- Facade pattern is a `structural` design pattern.
+- Provides a unified interface to a set of interfaces in a subsystem.
+- It is used to `simplify a complex system by providing a higher-level interface `that makes it easier to use.
+- The main goal of the Facade pattern is to hide the complexities of the subsystem and present a simplified view to the client or user.
+- `Note:` The Facade pattern is particularly useful in scenarios where a system is complex, and there are many interdependencies between its components. By introducing a facade, clients can interact with a simplified and unified interface, making the system easier to understand and use.
+ 
+**Key components and concepts of the Facade pattern:**
+
+1. **Facade:** This is the main class that provides a simplified interface to the client. It delegates the client requests to the appropriate objects within the subsystem. The facade doesn't perform the actual work but coordinates the activities of the subsystem.
+
+2. **Subsystem:** Subsystems are a set of classes or components that work together to perform a complex task. Each class within the subsystem represents a specific aspect or part of the system. The Facade delegates the client requests to these subsystem classes.
+
+3. **Client:** The client is the code that interacts with the Facade. Instead of dealing with the complexities of the subsystem directly, the client uses the simplified interface provided by the Facade.
+
+The Facade pattern is particularly useful in scenarios where a system is complex, and there are many interdependencies between its components. By introducing a facade, clients can interact with a simplified and unified interface, making the system easier to understand and use.
+
+Benefits of using the Facade pattern include:
+
+- **Simplified Interface:** The Facade provides a simple and unified interface to the client, hiding the complexities of the subsystem.
+
+- **Reduced Dependency:** Clients depend on the Facade rather than directly on the subsystem, reducing the coupling between the client code and the subsystem.
+
+- **Easier Maintenance:** Changes to the subsystem can be isolated within the facade, minimizing the impact on the client code.
+
+- **Promotes Encapsulation:** The internal details of the subsystem are encapsulated within the facade, promoting a cleaner and more modular design.
+
+### Example
+ 
+```csharp
+using System;
+
+// Subsystem classes
+class AudioPlayer
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Audio Player turned on");
+    }
+
+    public void PlayMusic(string song)
+    {
+        Console.WriteLine($"Playing music: {song}");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Audio Player turned off");
+    }
+}
+
+class Display
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Display turned on");
+    }
+
+    public void ShowImage(string image)
+    {
+        Console.WriteLine($"Displaying image: {image}");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Display turned off");
+    }
+}
+
+class Projector
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Projector turned on");
+    }
+
+    public void ProjectImage(string image)
+    {
+        Console.WriteLine($"Projecting image: {image}");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Projector turned off");
+    }
+}
+
+// Facade class
+class HomeTheaterFacade
+{
+    private AudioPlayer audioPlayer;
+    private Display display;
+    private Projector projector;
+
+    public HomeTheaterFacade()
+    {
+        audioPlayer = new AudioPlayer();
+        display = new Display();
+        projector = new Projector();
+    }
+
+    public void WatchMovie(string movie, string soundSystem)
+    {
+        Console.WriteLine($"Getting ready to watch movie: {movie}");
+        audioPlayer.TurnOn();
+        audioPlayer.PlayMusic(soundSystem);
+        display.TurnOn();
+        projector.TurnOn();
+        projector.ProjectImage(movie);
+    }
+
+    public void EndMovie()
+    {
+        Console.WriteLine("Ending the movie");
+        audioPlayer.TurnOff();
+        display.TurnOff();
+        projector.TurnOff();
+    }
+}
+
+// Client code
+class Program
+{
+    static void Main()
+    {
+        HomeTheaterFacade homeTheater = new HomeTheaterFacade();
+        homeTheater.WatchMovie("Inception", "Surround Sound");
+        Console.WriteLine();
+        homeTheater.EndMovie();
+    }
+}
+```
+
+In this example:
+
+- `AudioPlayer`, `Display`, and `Projector` are subsystem classes representing different components of a home theater system.
+- `HomeTheaterFacade` is the facade class that provides a simplified interface to watch a movie. It coordinates the operations of the subsystems.
+- The client code in the `Main` method interacts only with the `HomeTheaterFacade` class.
+
+When you run this C# program, it will output:
+
+```
+Getting ready to watch movie: Inception
+Audio Player turned on
+Playing music: Surround Sound
+Display turned on
+Projector turned on
+Projecting image: Inception
+
+Ending the movie
+Audio Player turned off
+Display turned off
+Projector turned off
+```
+
+This demonstrates how the Facade pattern can simplify complex operations in a multimedia system by providing a higher-level interface for a common use case.
