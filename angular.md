@@ -1253,16 +1253,16 @@ const result = data.subscribe(subject);
 - Above example will make only one http call.
 ---
 
-## BehavoiurSubject
+## BehaviorSubject
 - It is kind of subject that it will share single execution for every subscriber.
 - A subject does not hold a value.
-- A BehaviourSubject holds one value. When it is subscribed it emits the value immediately.
+- A BehaviorSubject holds one value. When it is subscribed it emits the value immediately.
 ```typescript
 //Subject
 const subject = Subject();
 subject.subscribe(d=>console.log(1))
 
-// Bevaiour subject
+// BehaviorSubject  
 const bSubject = new BehaviorSubject<number>(12);
 bSubject.subscribe(d=> console.log('Called:' ${d}));
 
@@ -1271,7 +1271,35 @@ Called: 12
 ```
 - In case of Subject, subscriber will not notify until and unless we emit the value using .next method.
 - BS holds the initial value, subscriber will get notify with the default value.
-- If it's not initial vlaue then all subscriber will get last emitted value incase of BS.
+- If it's not initial value then all subscriber will get last emitted value incase of BS.
 ```typescript
+// Subject
+const subject = new Subject();
 
+subject.subscribe(d=>console.log('Subscriber 1: ${d}'));
+
+subject.next(10);
+
+subject.subscribe(d=>console.log('Subscriber 2: ${d}')); // returned nothing
+
+// Behavior Subject
+const bSubject = new BehaviorSubject<number>(12);
+
+bSubject.subscribe(d=>console.log('Behavior Subject 1: ${d}'));
+
+bSubject.next(200);
+
+bSubject.subscribe(d=>console.log('Behavior Subject 2: ${d}'));
+
+//Output:
+> Subscriber 1: 10
+> Behavior Subject 1: 12
+> Behavior Subject 1: 200
+> Behavior Subject 2: 200 // last emitted value
 ```
+### Note: 
+- Communication between components:
+  - If you want to shared data between parent and child component then we use input and output property.
+    - Input - Pass data from parent component to child component.
+    - Output - Pass data from child component to parent component.
+- Some time we want to shared data which are not parent and child. so we could use Subject. We can pass data across the component.
