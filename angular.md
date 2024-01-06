@@ -1195,3 +1195,59 @@ Reference: https://www.javatpoint.com/rxjs-subjects
 
 ---
 
+## RxJS Subject:
+
+- Subject is like an observable but can be `multicast` to many Observers.
+- Observables are `uniccast` meaning, each subscribed observer owns an `independent` execution of the Observable.
+- While Observables are unicast by design then each subscriber will receives the `different` value.
+```typescript
+//Observables are unicast
+const observable = new Observable(observer => observer.next(Math.Random()));
+
+//subscriber 1
+observable.subscribe(x => console.log(x));
+
+//subscriber 2
+observable.subscribe(x => console.log(x));
+```
+- In above example, subscriber will give different value.
+- Everytime new subscriber come, a new value is emitted.
+- Sometimes we want to share same data across all the subscribers then Observable `default` behaviours does not work, then we use `Subjects`.
+- Subjects are multicast in nature means that one Observable execution is shared among multiple subscribers.
+- Subjects are like EventEmitters, on button click we emit event to many listsners.
+
+```typescript
+import {Subjects} from 'rxjs';
+// Subject
+const subject = new Subject();
+// subscriber 1
+subject.subscribe(x => console.log(x));
+// subscriber 2
+subject.subscribe(x => console.log(x))
+// Subject is like data provider
+subject.next(Math.Random());
+```
+- In above example, with the help of Subject subscriber will get `same` value.
+- In this example subject is like data provider.
+- Subject can also be used as a data consumer.
+```typescript
+import {ajax} from 'rxjs'
+
+const data = ajax('URL:');
+
+data.subscribe(d=> console.log(d))
+data.subscribe(d=>console.log(d))
+```
+- As we know observables are unicast. so if we check network tab for above code you will see 2 network calls.
+- Ideally it should have one http call, does not matter how many subscriber.
+- In below example, using subject it will convert observables behaviour from unicast to multicast
+```typescript
+const subject = new Subject();
+const data = ajax('URL:');
+
+subject.subscribe(d => console.log(d));
+subject.subscribe(d => console.log(d));
+
+const result = data.subscribe(subject);
+```
+
