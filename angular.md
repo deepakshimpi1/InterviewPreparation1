@@ -994,7 +994,50 @@ Second change is in view template  i.e employeeList.component.html file:
 
 ## Output properties
 
-How to pass user actions or user entered values or selections
+How to pass user actions or user entered values or selections or pass data from child component to parent component.
+
+
+```typescript
+//Child Component
+import { Output, EventEmitter, Component } from '@angular/core'
+@Component({
+selector: 'app-child',
+template: `
+   <div>
+      This is a child component
+      <button (notify)="passDataToParent()">Send data to parent</button>
+   <div> 
+`
+})
+export class ChildComponent implements OnInit{
+   @Output()
+   notify: EventEmitter<string> = new EventEmitter<string>();
+
+   passDataToparent(){
+      this.notify.emit("Hello! This is child component!");
+   }
+}
+
+//Listen this event from parent using Event Binding.
+//Parent html
+@Compoent({
+selector: 'app-parent'
+template: `
+   <div>
+   This is Parent Component
+   </div>
+   <app-child (notify)="getDataFromChild($event)"><app-child>
+   `
+})
+export class Parent{
+   childData: string;
+
+   getDataFromChild(data:string){
+      this.childData = data;
+   }
+}
+
+```
 
 ```
 // Import Output and EventEmitter
