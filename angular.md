@@ -1005,15 +1005,15 @@ selector: 'app-child',
 template: `
    <div>
       This is a child component
-      <button (notify)="passDataToParent()">Send data to parent</button>
+      <button (notify)="passDataToParent()">Send data to parent</button> // 2
    <div> 
 `
 })
 export class ChildComponent implements OnInit{
    @Output()
-   notify: EventEmitter<string> = new EventEmitter<string>();
+   notify: EventEmitter<string> = new EventEmitter<string>();  // 1
 
-   passDataToparent(){
+   passDataToparent(){  // 3
       this.notify.emit("Hello! This is child component!");
    }
 }
@@ -1026,13 +1026,13 @@ template: `
    <div>
    This is Parent Component
    </div>
-   <app-child (notify)="getDataFromChild($event)"><app-child>
+   <app-child (notify)="getDataFromChild($event)"><app-child> // 4
    `
 })
 export class Parent{
    childData: string;
 
-   getDataFromChild(data:string){
+   getDataFromChild(data:string){  // 5
       this.childData = data;
    }
 }
