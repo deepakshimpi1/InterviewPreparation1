@@ -1529,85 +1529,80 @@ Performance Question:
 
 ---
 
-latest PG-15
+## Project based scenario questions 
+
+> latest version - PG-15
 ---------------------------
 create temp table_table
 (
 	a integer
 )
 ---------------------------
-Materialized View: Physical storage data
-Used for pre computation scenario
+Materialized View: Physical storage data Used for pre-computation scenario.
 
 Use case:
-Our director has requirement to he wanted to see data in terms of graph and detail format in Tableau. 
+Client has requirement that they wanted to see data in terms of graph and detail format in Tableau. 
 
 As it had millions of records and the requirement was not for real time data.
-So we created MV and added data from all past day and added nightly trigger to refresh the MV to insert new day data.
+So we had created MV and added data from all past day and added nightly trigger to refresh to the MV to insert new day data.
 
 This Tableau report to show all the client request 
-which has total transaction for each clients against search, item and detail request.
+which has total transaction for each clients against the various endpoints search, item and detail etc and engines.
 
----------------------------
-
-
-explain
-observe query
-see whether seq scan(full table scan) or index scan
-
-seq scan - Full table scan
-Index scan - Index column scan
----------------------------
-to see explain:
-
+---
+### How to see query execution plan?
+```sql
 Explain
 select * from table;
+```
 
 Want to see more detail then,
-
+```sql
 Explain analyze
 select * from table;
----------------------------
-if we want to gather stats from table then use below command;
-
-> analyze table_name
--------
-
-if query is returning the rows and takes time,
-
-You can partition a table based on some column value.
+```
+---
+### If query is taking more time to retrieve data what you will do?
+1. Will use explain on query
+1. Will observe query execution plan using explain command on query
+1. Will observe/see whether query has seq scan(full table scan) or index scan.
+(seq scan - Full table scan and Index scan - Index column scan)
+1. If it is sequential scan then we will see the column and discuss whether should we apply index on that column or not?
+   1. Because applying index scan on table column increases the faster retrieval but slows down the insertion and updating.
+1. You can partition a table based on some column value.
 Ex. If your table contain year then partition your table based on year column value so that it will divide your main table into sub part based on year.
-
-When you query it will select the data from partition table instead of scanning all the records.
-
+   1. When you query it will select the data from partition table instead of scanning all the records.
+---
+### if we want to gather stats from table then use below command;
+```sql
+> analyze table_name
+```
 -----------
+### Monitoring on database:
+
 Monitoring implemented to check the long running/idle/blocking session on database using pg internal tables
 
 Postgres internal table: 
 > pg_stats_activity
-
-
------------------------
-when we delete a row then it keeps records in memory and hold an memory
-when we truncate a table then it deletes everything and free up the memory
-
-Vacuum - if delete row from table then it deletes logically but it is present in memory. so after delete when you select then you will not get deleted record
-
-so if you want to remove memory then run Vacuum on table.
-
-
-Trunc : DDL because it will clean up memory
------------------------------------------
-trigger or proc
+---
+#### Delete and truc
+- when we delete a row then it keeps records in memory and hold an memory
+- when we truncate a table then it deletes everything and free up the memory
+- `Vacuum` - if delete row from table then it deletes logically but it is present in memory. so after delete when you select then you will not get deleted record so if you want to remove memory then run Vacuum on table.
+- Trunc : DDL because it will clean up memory
+---
+### Things for trigger or proc
 
 trigger are events based, we should not write application logic
 only for audit
 
------------------------------------------
-Isolation level:--
+---
+### Isolation level:
 
-Read committed:
-user can read only committed records.
+- `Read committed`:
+   - user can read only committed records.
 
-read uncommitted: When one thread is inserting the data, you can select inserted rows before commit using read committed isolation level.
-
+- `Read uncommitted`: 
+   - dirty read
+   - When one thread is inserting the data, you can select inserted rows before commit using read committed isolation level.
+---

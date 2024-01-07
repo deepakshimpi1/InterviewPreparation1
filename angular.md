@@ -1722,3 +1722,7 @@ Now, you can use the lazy-loaded module in your application. For example, in the
 When you run the Angular application and navigate to the "Feature" link, the `FeatureModule` will be loaded lazily, and its components and services will only be fetched when needed.
 
 Lazy loading is particularly useful for large applications, as it allows you to split your application into smaller chunks that are loaded on demand, improving the initial loading time for users.
+
+---
+
+## 
