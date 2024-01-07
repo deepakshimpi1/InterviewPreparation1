@@ -1606,3 +1606,43 @@ only for audit
    - dirty read
    - When one thread is inserting the data, you can select inserted rows before commit using read committed isolation level.
 ---
+### Can you write update statement on views?
+
+Whether you can write an update query on a view depends on several factors, including the nature of the view and the underlying tables. In general, you can update a view under certain conditions:
+
+1. **Updatable Views:**
+   - The view must be defined in a way that allows updates. This typically requires that the view is based on a single table and meets certain criteria (e.g., no use of `DISTINCT`, `GROUP BY`, `JOIN` operations, and no use of certain functions in the select list).
+
+2. **No Complex Expressions:**
+   - The view's select list should not contain complex expressions, aggregates, or functions that prevent the database engine from unambiguously determining how to perform updates.
+
+3. **No Joins:**
+   - In many database systems, views that involve joins between multiple tables are not automatically updatable.
+
+4. **Key Columns:**
+   - The view should have a clear mapping to the primary key of the underlying table, allowing the database engine to identify the rows to be updated.
+
+If these conditions are met, you can use the `UPDATE` statement on the view. However, the syntax might vary between different database management systems.
+
+### Example for SQL Server:
+
+```sql
+-- Create a simple updatable view
+CREATE VIEW UpdatableView AS
+SELECT
+    ID,
+    Name
+FROM
+    YourTable;
+
+-- Update the view
+UPDATE UpdatableView
+SET
+    Name = 'NewValue'
+WHERE
+    ID = 1;
+```
+---
+
+
+ 
