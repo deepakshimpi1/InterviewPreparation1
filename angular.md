@@ -1346,3 +1346,379 @@ bSubject.subscribe(d=>console.log('Behavior Subject 2: ${d}'));
     - Input - Pass data from parent component to child component.
     - Output - Pass data from child component to parent component.
 - Some time we want to shared data which are not parent and child. so we could use Subject. We can pass data across the component.
+
+
+--- 
+
+## Replay subject
+
+- It is also variant of Subject.
+- It emits/buffer old values and emit those values to new subscribers.
+- Unlike BS, it does not have initial value. If your requirement is you do not need initial values but want to emit old values to new subscriber then Replay subject best fit.
+
+```typescript
+
+const $message  = new ReplaySubject();
+$message.next("hello");
+$message.next("how are you?");
+$message.next("From where are you?");
+$message.next("Stay at home.");
+$message.subscribe(m=> console.log('User 1:' ${m}))
+
+// Output
+> User 1: hello
+> User 1: how are you?
+> User 1: From where are you?
+> User 1: Stay at home.
+```
+
+- Now if you want to emit only 2 values to new subscriber.
+- You would need to provide buffer to Replay.
+```typescript
+const message = new ReplaySubject(2);
+
+$message.next("hello");
+$message.next("how are you?");
+$message.next("From where are you?");
+$message.next("Stay at home.");
+
+$message.subscribe(m=> console.log('User 1:' ${m}))
+
+// Output
+> User 1: From where are you?
+> User 1: Stay at home.
+```
+- When my subscriber is already their and after this I emit new message. In this it will print last 2 buffer values with new emitted value.
+
+
+```typescript
+const message = new ReplaySubject(2);
+
+$message.next("hello");
+$message.next("how are you?");
+$message.next("From where are you?");
+$message.next("Stay at home.");
+
+$message.subscribe(m=> console.log('User 1:' ${m}))
+
+$message.next("Get Vaccinated");
+// Output
+> User 1: From where are you?
+> User 1: Stay at home.
+> User 1: Get Vaccinated.
+```
+- `Replay subject` emits old value to new subscriber and it buffers number of values and will emit those values immediately to new subscriber and in addition it will emit new values to existing subscriber. 
+
+```typescript
+const message = new ReplaySubject(2);
+
+$message.next("hello");
+$message.next("how are you?");
+$message.next("From where are you?");
+$message.next("Stay at home.");
+
+$message.subscribe(m=> console.log('User 1:' ${m}))
+
+$message.next("Get Vaccinated");
+$message.next("Job Done!");
+
+$message.subscribe(m=> console.log('User 2:' ${m}))
+// Output
+> User 1: From where are you?
+> User 1: Stay at home.
+> User 1: Get Vaccinated.
+> User 1: Job Done!
+> User 2: Get Vaccinated.
+> User 2: Job Done!
+```
+
+- **`Window time`**
+  - Hold the data into buffer for a period of time.
+
+### BS vs RS
+- BS - default value while in RS - no option to pass default value.
+- BS- can not hold multiple value while RS - can hold multiple values in buffer.
+
+----
+
+## Async Subject
+
+-  This is subject where only the `last value` of the observable execution is sent to it's subscribers and `only when the execution completes`.
+- Hold last value.
+- Called when complete method called. It works with `complete()` method
+- It could be useful for fetching and caching resources, since generally http.get will emit one response then complete.
+- It is similar to Promises but promises always egar. With it we can control it subscribe meaning they are lazy.
+
+
+```typescript
+const asyncSub = new AsyncSubject();
+asyncSub.next("1")
+asyncSub.next("2")
+asyncSub.next("3")
+
+asyncSub.subscribe(d=>console.log('User 1: ${d}'));
+
+//Output
+>     // No output because you can not called complete method.
+```
+
+```typescript
+const asyncSub = new AsyncSubject();
+asyncSub.next("1")
+asyncSub.next("2")
+asyncSub.next("3")
+
+asyncSub.complete() // Added complete method
+
+asyncSub.subscribe(d=>console.log('User 1: ${d}'));
+
+//Output
+> User 1: 3  // retuning last emitted value
+```
+
+```typescript
+const asyncSub = new AsyncSubject();
+asyncSub.next("1")
+asyncSub.next("2")
+asyncSub.next("3")
+
+asyncSub.complete() // Added complete method
+
+asyncSub.next("4") // It will ignore this because as per definition it will output last value.
+
+asyncSub.subscribe(d=>console.log('User 1: ${d}'));
+
+//Output
+> User 1: 3  // retuning last emitted value
+```
+```typescript
+const asyncSub = new AsyncSubject();
+asyncSub.next("1")
+asyncSub.next("2")
+asyncSub.next("3")
+
+asyncSub.complete() // Added complete method
+
+asyncSub.next("4") // It will ignore this because as per definition it will output last value.
+
+asyncSub.subscribe(d=>console.log('User 1: ${d}'));
+
+asyncSub.next("5")
+
+asyncSub.subscribe(d=>console.log('User 2: ${d}'));
+
+//Output
+> User 1: 3  // retuning last emitted value for both
+> User 2: 3  // retuning last emitted value for both
+```
+----
+
+## HTTP INTERCEPTORS
+
+- Interceptors are a unique type of Angular Service that we can implement to intercept incoming or outgoing requests using the HTTP Client.
+- Operations:
+  - Modify the HTTP headers
+  - Modifying the request body
+  - Set authentication/authorization token
+    - Intercept requests to add authentication tokens or headers for authorized access.
+    - Intercept responses to handle unauthorized or expired tokens, prompting users to log in again.
+  - Logging
+    - Log information about outgoing HTTP requests and incoming responses for debugging purposes.
+    - Capture timestamps, request URLs, and other relevant data for monitoring and analysis.
+  - Mock the backend api
+  - Caching
+    - Implement caching strategies by intercepting requests and checking if the response is already available locally.
+  - Error handling
+    - Intercept responses to handle errors globally, such as displaying a common error message for specific HTTP status codes.
+  - Loading Indicators
+    - Show loading indicators during HTTP requests and hide them when requests are completed.
+  - Request Retries:
+    - Intercept failed requests and implement retry logic, such as automatically retrying requests after a short delay.
+- cli command - `ng g interceptor headers` (angular 9 above)
+
+```typescript
+import { Injectable } from '@angular/core';
+
+import{
+  HttpRequest, HttpHandler, HttpEvent, HttpsInterceptor
+} from '@angular/common/http';
+import {Observable} from 'rxjs';
+
+@Injectable()
+export class HeaderInterceptor implements HttpInterCeptor{
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>>{
+    const API_KEY='test123';
+    const req = request.clone({
+      setHeaders: {
+        API_KEY
+      }
+    })
+
+    return next.handle(request);
+  }
+}
+
+// Import in providers in app module
+
+@NgModule({
+  declaration: [],
+  imports: [],
+  providers:[
+    {provide: HTTP_INTERCEPTORS, useClass: HeaderInterceptor, multi: true}//You can add more than one interceptors but order of it should respect.
+  ]
+})
+```
+
+### Project example:
+
+Consider an example where an HTTP interceptor is used to add an authentication token to the headers of outgoing requests. This is a common use case for handling authentication globally in an Angular application.
+
+Assuming you have an authentication service that provides the user's token, you can create an HTTP interceptor to append the token to each outgoing request. Here's a simple example:
+
+```typescript
+// auth-interceptor.ts
+
+import { Injectable } from '@angular/core';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor
+} from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
+
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+
+  constructor(private authService: AuthService) {}
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    // Get the user's token from the authentication service
+    const authToken = this.authService.getToken();
+
+    // Clone the request and add the token to the headers
+    const authRequest = request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${authToken}`
+      }
+    });
+
+    // Pass the cloned request to the next handler
+    return next.handle(authRequest);
+  }
+}
+```
+
+In this example:
+
+1. The `AuthInterceptor` class implements the `HttpInterceptor` interface.
+2. The `intercept` method is called for every outgoing HTTP request.
+3. The `AuthService` is injected to obtain the authentication token.
+4. The original request is cloned, and the token is added to the headers using the `setHeaders` property of the clone.
+5. The cloned request is then passed to the next handler using `next.handle(authRequest)`.
+
+To use this interceptor, you need to provide it in your Angular module:
+
+```typescript
+// app.module.ts
+
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth-interceptor';
+
+@NgModule({
+  declarations: [
+    // ... your components and services
+  ],
+  imports: [
+    BrowserModule,
+    HttpClientModule
+  ],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
+  bootstrap: [/* ... */]
+})
+export class AppModule { }
+```
+
+Now, with this setup, every outgoing HTTP request will include the authentication token in the headers, providing a centralized way to handle authentication across your application.
+
+---
+
+## Lazy loading 
+- in Angular is a technique that allows you to load modules on-demand, which can significantly improve the initial loading time of your application. Here's an example of how you can implement lazy loading in an Angular application.
+
+Let's consider a scenario where you have a feature module that you want to load lazily. This feature module contains a component and a service.
+
+1. **Create a Feature Module:**
+
+```typescript
+// feature.module.ts
+
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FeatureComponent } from './feature.component';
+import { FeatureService } from './feature.service';
+import { RouterModule } from '@angular/router';
+
+@NgModule({
+  declarations: [FeatureComponent],
+  imports: [
+    CommonModule,
+    RouterModule.forChild([
+      { path: '', component: FeatureComponent }
+    ])
+  ],
+  providers: [FeatureService],
+})
+export class FeatureModule { }
+```
+
+In this module, we have a simple component (`FeatureComponent`) and a service (`FeatureService`). The `RouterModule.forChild` is used to define a route for the lazy-loaded module.
+
+2. **Update App Routing:**
+
+```typescript
+// app-routing.module.ts
+
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', loadChildren: () => import('./home/home.module').then(m => m.HomeModule) },
+  { path: 'feature', loadChildren: () => import('./feature/feature.module').then(m => m.FeatureModule) }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+```
+
+In the `AppRoutingModule`, we use the `loadChildren` property to specify the path to the feature module. The `import('./feature/feature.module').then(m => m.FeatureModule)` syntax is used for dynamic imports, enabling lazy loading for the specified module.
+
+3. **Use the Lazy-Loaded Module:**
+
+Now, you can use the lazy-loaded module in your application. For example, in the main app component or another feature module, you might have a link to the lazy-loaded feature:
+
+```html
+<!-- app.component.html or any other template -->
+<a routerLink="/feature">Go to Feature</a>
+<router-outlet></router-outlet>
+```
+
+4. **Run the Application:**
+
+When you run the Angular application and navigate to the "Feature" link, the `FeatureModule` will be loaded lazily, and its components and services will only be fetched when needed.
+
+Lazy loading is particularly useful for large applications, as it allows you to split your application into smaller chunks that are loaded on demand, improving the initial loading time for users.

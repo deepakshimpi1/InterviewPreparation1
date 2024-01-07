@@ -1533,19 +1533,19 @@ latest PG-15
 ---------------------------
 create temp table_table
 (
-	a intger
+	a integer
 )
 ---------------------------
-Materlized View: Physical storage data
-Used for pre computation scnerio
+Materialized View: Physical storage data
+Used for pre computation scenario
 
 Use case:
-Our director has requirement to he wanted to see data in terms of graph and detail format in tablu. 
+Our director has requirement to he wanted to see data in terms of graph and detail format in Tableau. 
 
 As it had millions of records and the requirement was not for real time data.
 So we created MV and added data from all past day and added nightly trigger to refresh the MV to insert new day data.
 
-This Tableu report to show all the client request 
+This Tableau report to show all the client request 
 which has total transaction for each clients against search, item and detail request.
 
 ---------------------------
@@ -1578,22 +1578,22 @@ if query is returning the rows and takes time,
 You can partition a table based on some column value.
 Ex. If your table contain year then partition your table based on year column value so that it will divide your main table into sub part based on year.
 
-When you query it will select the data from partion table instaed of scanning all the records.
+When you query it will select the data from partition table instead of scanning all the records.
 
 -----------
-Monitoring implemeted to check the long running/idle/blocking session on database using pg internal tables
+Monitoring implemented to check the long running/idle/blocking session on database using pg internal tables
 
 Postgres internal table: 
-pg_stats_acitivity
+> pg_stats_activity
 
 
 -----------------------
 when we delete a row then it keeps records in memory and hold an memory
-when we truncate a table then it dletes everything and free up the memory
+when we truncate a table then it deletes everything and free up the memory
 
-Vaccume - if delete row from table then it deletes logically but it is present in memory. so after delete when you select then you will not get deleted record
+Vacuum - if delete row from table then it deletes logically but it is present in memory. so after delete when you select then you will not get deleted record
 
-so if you want to remove memory then run Vaccum on table.
+so if you want to remove memory then run Vacuum on table.
 
 
 Trunc : DDL because it will clean up memory
