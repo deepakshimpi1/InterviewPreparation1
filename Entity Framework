@@ -99,3 +99,164 @@ EF:
 
 ## Storage Model?
 - The storage model is usually explained as the database design model that consists of database tables, stored procs, views, and keys with relationships.
+
+---
+
+## Entity Framework?
+- Entity Framework is an ORM framework. 
+- ORM stands for Object Relational Mapping.
+  - Object Relational Mapping framework automatically creates classes based on database tables, and the vice versa is also true, thatis, it can also automatically generate necessary SQL to create database tables based on classes.
+- EF supports various database providers, including SQL Server, MySQL, PostgreSQL, and SQLite, among others.
+-  EF supports lazy loading, where related data is loaded from the database only when accessed, and eager loading, where related data is retrieved along with the main data.
+- EF supports Language-Integrated Query (LINQ), which enables developers to write queries using C# syntax directly in their code. This provides a type-safe
+
+## Database First Approach:
+
+- Database-First approach is often chosen when working with existing databases, 
+- especially in scenarios where the database schema is already well-established.
+- It allows developers to leverage existing databases without having to manually create data models or write extensive code for database interactions.
+
+Certainly! Let's walk through a simple example of the Database-First approach using Entity Framework.
+
+### Example Scenario:
+Imagine you have an existing database with a table called `Students`. The table has columns such as `StudentID`, `FirstName`, `LastName`, and `Age`. We'll use Entity Framework to generate a data model and interact with this database.
+
+### Steps:
+
+1. **Create an Existing Database:**
+   - Assume you have a database named `SchoolDB` with a table named `Students`.
+
+2. **Generate Entity Data Model:**
+   - Use Entity Framework tools, such as the Entity Data Model Wizard in Visual Studio, to generate the data model based on the existing database.
+
+3. **Generated Entity Classes:**
+   - Entity Framework generates entity classes based on the `Students` table. These classes might look like the following:
+
+   ```csharp
+   public class Student
+   {
+       public int StudentID { get; set; }
+       public string FirstName { get; set; }
+       public string LastName { get; set; }
+       public int Age { get; set; }
+   }
+   ```
+
+4. **Generated Context Class:**
+   - Entity Framework also generates a context class responsible for managing the interactions with the database. It might look like this:
+
+   ```csharp
+   public class SchoolDbContext : DbContext
+   {
+       public DbSet<Student> Students { get; set; }
+   }
+   ```
+
+5. **Use Generated Code in Application:**
+   - Incorporate the generated entity classes and context class into your application code:
+
+   ```csharp
+   using (var context = new SchoolDbContext())
+   {
+       // Querying data
+       var students = context.Students.ToList();
+
+       // Adding a new student
+       var newStudent = new Student
+       {
+           FirstName = "John",
+           LastName = "Doe",
+           Age = 20
+       };
+       context.Students.Add(newStudent);
+       context.SaveChanges();
+
+       // Updating a student
+       var existingStudent = context.Students.FirstOrDefault(s => s.FirstName == "John");
+       if (existingStudent != null)
+       {
+           existingStudent.Age = 21;
+           context.SaveChanges();
+       }
+
+       // Deleting a student
+       var studentToDelete = context.Students.FirstOrDefault(s => s.LastName == "Doe");
+       if (studentToDelete != null)
+       {
+           context.Students.Remove(studentToDelete);
+           context.SaveChanges();
+       }
+   }
+   ```
+
+6. **Update Model as Needed:**
+   - If changes are made to the database schema, you can use Entity Framework tools to update the Entity Data Model, ensuring that your data model remains in sync with the database.
+
+This example demonstrates how the Database-First approach allows you to work with an existing database by generating the necessary code for data access based on the database schema.
+
+---
+
+## DbContext vs DbSet
+
+`DbContext` and `DbSet` are both key components of Entity Framework, but they serve different purposes in the context of database interaction.
+
+### DbContext:
+
+- **Definition:**
+  - `DbContext` is a class in Entity Framework that represents a session with the database. It is responsible for managing database connections, transaction management, and providing a set of DbSet properties.
+
+- **Functionality:**
+  - Manages the interaction between the application and the database.
+  - Acts as a bridge between the application's domain entities and the database.
+  - Maintains information about the database connection, the model, and provides methods for querying, updating, and persisting data.
+
+- **Example:**
+  ```csharp
+  public class SchoolDbContext : DbContext
+  {
+      public DbSet<Student> Students { get; set; }
+      public DbSet<Course> Courses { get; set; }
+
+      // Other configuration and methods...
+  }
+  ```
+
+- **Usage:**
+  - Create an instance of the `DbContext` to interact with the database.
+  - Provides access to multiple DbSet properties, each representing a collection of entities corresponding to a database table.
+
+### DbSet:
+
+- **Definition:**
+  - `DbSet` is a class within Entity Framework that represents a collection of entities for a specific database table. It is a property of the `DbContext` class.
+
+- **Functionality:**
+  - Represents a set of entities (rows) for a specific table in the database.
+  - Provides methods for querying, adding, updating, and deleting entities within that table.
+
+- **Example:**
+  ```csharp
+  public class SchoolDbContext : DbContext
+  {
+      public DbSet<Student> Students { get; set; }
+      public DbSet<Course> Courses { get; set; }
+
+      // Other configuration and methods...
+  }
+  ```
+
+- **Usage:**
+  - Used within the `DbContext` to perform CRUD operations on entities within a specific database table.
+  - Enables LINQ queries and other operations on a specific entity type.
+
+### Relationship:
+
+- **Connection:**
+  - `DbContext` contains one or more `DbSet` properties, each corresponding to a database table.
+  - `DbSet` is part of the `DbContext` and represents a specific collection of entities.
+
+- **Hierarchy:**
+  - `DbContext` is higher in the hierarchy and encapsulates the entire database context, managing all aspects of database interaction.
+  - `DbSet` is a property within the `DbContext` and represents a specific set of entities within the context.
+
+In summary, `DbContext` is the main class responsible for managing the interaction with the database, while `DbSet` is a property of `DbContext` representing a collection of entities for a specific database table. They work together to provide a high-level abstraction for database operations in Entity Framework.
