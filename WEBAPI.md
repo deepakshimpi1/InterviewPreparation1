@@ -70,4 +70,109 @@ When a Web API returns an error in a running production system, developers need 
     - Conduct a post-mortem analysis to review the incident, identify root causes, and determine preventive measures.
     - Document lessons learned and update procedures to avoid similar issues in the future.
 
+---
+
+## FQDN
 Remember, effective troubleshooting often involves a combination of technical skills, collaboration with other teams, and attention to detail. Communication with users and stakeholders is also important to keep them informed about the investigation and resolution progress.
+
+FQDN stands for Fully Qualified Domain Name. It is a domain name that specifies its exact location in the tree hierarchy of the Domain Name System (DNS). An FQDN includes the host name and all its parent domain names up to the top-level domain (TLD). The format is typically "hostname.domain.tld".
+
+Here's a breakdown of the components in an FQDN:
+
+- **Hostname:** The specific name assigned to a device or node within the domain.
+- **Domain:** A broader grouping of devices or nodes. It represents a section of the DNS namespace.
+- **Top-Level Domain (TLD):** The highest level in the DNS hierarchy, such as ".com," ".org," ".net," or a country code TLD like ".uk."
+
+For example, in the FQDN "www.example.com":
+
+- Hostname: www
+- Domain: example
+- TLD: com
+
+### Use of FQDN in Web API:
+
+1. **Server Identification:**
+   - FQDN is used to uniquely identify the server hosting a Web API.
+   - It helps clients locate and connect to the correct server in a network.
+
+2. **DNS Resolution:**
+   - Clients use DNS to resolve the FQDN to an IP address.
+   - The FQDN serves as a human-readable and meaningful identifier for the server.
+
+3. **SSL/TLS Certificates:**
+   - FQDN is often associated with SSL/TLS certificates used for secure communication (HTTPS).
+   - SSL/TLS certificates are bound to specific FQDNs, ensuring secure connections to the correct domain.
+
+4. **Load Balancing:**
+   - In scenarios involving load balancing, FQDNs are used to distribute traffic across multiple servers.
+   - Clients connect to the load balancer's FQDN, which then forwards requests to backend servers.
+
+5. **API Endpoint Identification:**
+   - FQDN is used to specify the endpoint of a Web API.
+   - It helps create a clear and standardized API endpoint, making it accessible via a well-defined domain.
+
+6. **API Versioning:**
+   - FQDN can be part of API versioning strategies by incorporating version information in the domain.
+   - For example, "api.v1.example.com" and "api.v2.example.com" might represent different API versions.
+
+7. **Cross-Origin Resource Sharing (CORS):**
+   - When dealing with cross-origin requests, FQDN plays a role in CORS policies.
+   - It helps define which domains are allowed to make requests to the API.
+
+8. **Service Discovery:**
+   - In microservices architectures, FQDNs can be used for service discovery.
+   - Services register themselves with FQDNs, allowing other services to locate and communicate with them.
+
+In summary, FQDNs are essential for identifying and accessing Web APIs on the internet or within a network. They provide a human-readable and standardized way to refer to specific servers or API endpoints.
+
+---
+
+## Session management
+
+Session management refers to the process of maintaining stateful information about a user's interactions with a web application across multiple requests. In the context of ASP.NET, session management can be handled using different modes, specifically "InProc" (in-process) and "OutProc" (out-of-process).
+
+### InProc (In-Process) Session Management:
+
+- **Storage Location:** InProc session management stores session data within the same process (in-memory) as the web application.
+- **Advantages:**
+  - Fast and efficient access to session data since it's stored in memory.
+  - No external dependencies or additional configurations needed.
+- **Considerations:**
+  - Limited scalability: As the session data is stored in the application's memory, it can impact scalability, especially in a web farm or server farm scenario.
+  - Data loss: If the application restarts or recycles, the session data is lost.
+
+### OutProc (Out-of-Process) Session Management:
+
+- **Storage Location:** OutProc session management stores session data outside the web application process.
+- **Storage Options:**
+  - **State Server:** Session data is stored in a separate "state server" process.
+  - **SQL Server:** Session data is stored in a SQL Server database.
+  - **Custom Provider:** Developers can implement custom session state providers.
+- **Advantages:**
+  - Improved scalability: Multiple web servers can share session data stored externally.
+  - Resilience: Session data survives application restarts or recycles.
+- **Considerations:**
+  - Slower access compared to InProc: Accessing session data may involve inter-process communication, which can introduce some latency.
+  - Additional configuration: Requires setting up and configuring an external state server or database.
+
+### Choosing Between InProc and OutProc:
+
+- **Scale:** If scalability is a critical factor and the application needs to run on multiple servers, OutProc is often preferred.
+- **Performance:** For smaller applications or single-server setups, InProc may provide better performance due to direct in-memory access.
+- **Resilience:** If the application needs to survive restarts or recycles, OutProc is a more resilient option.
+
+### Configuration in ASP.NET:
+
+Configuring the session mode is done in the `web.config` file:
+
+```xml
+<configuration>
+  <system.web>
+    <sessionState mode="InProc" /> <!-- or mode="StateServer" or mode="SQLServer" -->
+  </system.web>
+</configuration>
+```
+
+In this example, `mode` can be set to "InProc," "StateServer," or "SQLServer" based on the chosen session management mode.
+
+Remember, the choice between InProc and OutProc depends on the specific requirements and constraints of your web application, including factors like scalability, performance, and resilience.
