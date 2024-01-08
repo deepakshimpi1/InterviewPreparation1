@@ -115,8 +115,7 @@ EF:
 - Database-First approach is often chosen when working with existing databases, 
 - especially in scenarios where the database schema is already well-established.
 - It allows developers to leverage existing databases without having to manually create data models or write extensive code for database interactions.
-
-Certainly! Let's walk through a simple example of the Database-First approach using Entity Framework.
+ 
 
 ### Example Scenario:
 Imagine you have an existing database with a table called `Students`. The table has columns such as `StudentID`, `FirstName`, `LastName`, and `Age`. We'll use Entity Framework to generate a data model and interact with this database.
@@ -260,3 +259,289 @@ This example demonstrates how the Database-First approach allows you to work wit
   - `DbSet` is a property within the `DbContext` and represents a specific set of entities within the context.
 
 In summary, `DbContext` is the main class responsible for managing the interaction with the database, while `DbSet` is a property of `DbContext` representing a collection of entities for a specific database table. They work together to provide a high-level abstraction for database operations in Entity Framework.
+
+
+### Transaction with DbContext
+- Be cautious about sharing a DbContext instance across multiple threads. It's generally recommended to use a `separate` DbContext instance for each thread or scope.
+
+```c#
+public class YourService
+{
+    private readonly YourDbContext _context;
+
+    public YourService(YourDbContext context)
+    {
+        _context = context;
+    }
+
+    public void PerformTransaction()
+    {
+        using (var transaction = _context.Database.BeginTransaction())
+        {
+            try
+            {
+                // Perform operations within the transaction using '_context'
+                _context.SaveChanges(); // Commit changes if successful
+
+                transaction.Commit();
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                // Handle exception or rethrow if needed
+            }
+        }
+    }
+}
+
+```
+---
+
+## Model First Approach
+
+- We first create an entity model, the data model is designed visually using a `graphical designer`.
+- And the corresponding database schema is generated from that model.
+- Ca use `edmx` Entity Data Model XML to design model. 
+- It provides a high-level abstraction that allows developers to focus on the structure of the data model without dealing with the database schema creation manually.
+
+---
+## Code First Approach
+
+- Code first approach allows us to create our custom classes first 
+- and based on those EF can generate database automatically for us.
+- `data model` is defined using `code`, and the database schema is generated or updated based on the code.
+- Here we add model classes then DbContext class and also operations using repository pattern.
+
+### Pros:
+- Code-First provides more control over the database schema through code. Developers can define entities, relationships, and constraints directly in code.
+- Code-First integrates well with version control systems. Developers can manage changes to the data model alongside application code changes.
+- Entity classes can be reused in different projects, making it easier to share data models across applications.
+---
+
+## Repository Pattern
+  
+### Introduction:
+
+- The Repository Pattern is a design pattern commonly used in software development, particularly in the context of data access. 
+- Its main purpose is to provide an `abstraction layer between the application's business logic and the data access logic`, offering a clean and modular way to interact with a data storage system, such as a database."
+
+### Key Components:
+
+1. **Entity:**
+   - Explain that an entity represents a domain object or a data entity within the application. It's a representation of a real-world concept in the system.
+
+2. **Repository Interface:**
+   - Describe the repository interface as the contract that defines the methods for data access related to a specific entity. It outlines the operations that the repository will provide, such as GetById, GetAll, Add, Update, and Delete.
+
+3. **Repository Implementation:**
+   - Explain that the repository implementation is responsible for implementing the methods defined in the repository interface. It contains the actual data access logic, interacting with the underlying data storage (e.g., a database).
+
+### Example:
+
+Provide a simple example to illustrate how the Repository Pattern works. Use a common scenario like managing products:
+
+"As an example, let's consider a scenario where we have a `Product` entity. The `IProductRepository` interface outlines methods like `GetById`, `GetAll`, `Add`, `Update`, and `Delete`. The `ProductRepository` class then implements these methods, handling the actual data access logic, such as querying the database or adding a new product."
+
+### Benefits:
+
+Highlight the advantages of using the Repository Pattern:
+
+1. **Abstraction:**
+   - Emphasize how the pattern abstracts away the complexities of data access, providing a clean and well-defined interface for the rest of the application.
+
+2. **Testability:**
+   - Mention that the pattern enhances testability by allowing easy mocking of the repository interface during unit testing.
+
+3. **Separation of Concerns:**
+   - Explain how it promotes a separation of concerns, isolating the data access logic from the rest of the application's business logic.
+
+4. **Flexibility:**
+   - Discuss how the pattern provides flexibility by allowing the underlying data storage system to be switched without affecting the application's business logic.
+
+
+### Real-World Use Cases:
+
+Provide real-world scenarios where the Repository Pattern is commonly used:
+
+- "In larger applications where managing data access becomes more complex."
+- "When working with different data storage systems (e.g., relational databases, NoSQL databases) and needing a consistent interface."
+- "In scenarios where version control and tracking changes to the data model are crucial."
+---
+
+## Dapper
+
+"Dapper is a micro ORM (Object-Relational Mapping) library for .NET that simplifies the process of interacting with databases, specifically when querying data. Here's why developers often choose to use Dapper for SQL queries:
+
+1. **Performance:**
+   - Dapper is known for its `exceptional performance`. It's designed to be lightweight and efficient, resulting in faster data access compared to some larger ORM frameworks. This is particularly crucial in applications where performance is a priority.
+
+2. **Simplicity:**
+   - Dapper is remarkably simple to use. It doesn't come with an overwhelming set of features or complex configurations. You write your SQL queries, and Dapper seamlessly maps the results to your object models. The simplicity makes it easy for developers to understand and adopt.
+
+3. **Raw SQL Queries:**
+   - Dapper allows developers to `write raw SQL queries`. This gives a level of flexibility and control over the queries.
+
+4. **Automatic Object Mapping:**
+   - Dapper `provides automatic object mapping`, which means you can execute a SQL query, and Dapper will intelligently map the result set directly to your object models.
+
+5. **Lightweight Library:**
+   - Being a micro ORM, Dapper has a small footprint. It doesn't introduce unnecessary overhead to your application, making it a suitable choice for projects where a lightweight data access solution is preferred.
+
+6. **Compatibility:**
+   - Dapper is compatible with various database providers, including SQL Server, MySQL, PostgreSQL, and more. This flexibility allows developers to use Dapper in projects with different database systems.
+
+In summary, Dapper is chosen for its performance, simplicity, and flexibility. It excels in scenarios where raw SQL queries are preferred, and there's a need for a lightweight and efficient data access solution."
+
+
+```c#
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using Dapper;
+
+class Program
+{
+    static void Main()
+    {
+        // Retrieve the connection string from configuration
+        string connectionString = "YourConnectionStringHere";
+
+        // Query the database using Dapper
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        {
+            connection.Open();
+
+            // Define the SQL query
+            string sqlQuery = "SELECT ProductId, ProductName, Price FROM Products";
+
+            // Execute the query and map results to the Product class
+            IEnumerable<Product> products = connection.Query<Product>(sqlQuery);
+
+            // Display the results
+            Console.WriteLine("Product List:");
+            foreach (var product in products)
+            {
+                Console.WriteLine($"ProductId: {product.ProductId}, ProductName: {product.ProductName}, Price: {product.Price}");
+            }
+        }
+    }
+}
+```
+
+---
+
+## EF vs EF Core
+
+- EF core is cross platform and lightweight
+- Supports various platforms, including Windows, Linux, and macOS.
+- Suitable for applications targeting .NET Core, .NET 5+, and beyond.
+
+### Example using Entity Framework (EF):
+
+```csharp
+using System;
+using System.Data.Entity;
+
+// Entity class
+public class Product
+{
+    public int ProductId { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+// DbContext class
+public class AppDbContext : DbContext
+{
+    public DbSet<Product> Products { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new AppDbContext())
+        {
+            // Querying products
+            var products = context.Products.ToList();
+
+            // Displaying results
+            Console.WriteLine("Products:");
+            foreach (var product in products)
+            {
+                Console.WriteLine($"ProductId: {product.ProductId}, Name: {product.Name}, Price: {product.Price}");
+            }
+        }
+    }
+}
+```
+
+### Example using Entity Framework Core (EF Core):
+
+```csharp
+using System;
+using Microsoft.EntityFrameworkCore;
+
+// Entity class
+public class Product
+{
+    public int ProductId { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+}
+
+// DbContext class
+public class AppDbContext : DbContext
+{
+    public DbSet<Product> Products { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("YourConnectionStringHere");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new AppDbContext())
+        {
+            // Querying products
+            var products = context.Products.ToList();
+
+            // Displaying results
+            Console.WriteLine("Products:");
+            foreach (var product in products)
+            {
+                Console.WriteLine($"ProductId: {product.ProductId}, Name: {product.Name}, Price: {product.Price}");
+            }
+        }
+    }
+}
+```
+
+### Key Differences:
+
+1. **Namespace and Package:**
+   - EF: `using System.Data.Entity;`
+   - EF Core: `using Microsoft.EntityFrameworkCore;`
+
+2. **DbContext Configuration:**
+   - EF: Configuration often involves settings in the `App.config` or `Web.config` file.
+   - EF Core: Uses the `OnConfiguring` method to configure the database connection, and typically relies on dependency injection for additional configurations.
+
+3. **ConnectionString:**
+   - EF: Connection string management can be different based on the specific configuration.
+   - EF Core: Connection string is often specified in the `OnConfiguring` method.
+
+4. **Platform Support:**
+   - EF: Primarily targeted at the full .NET Framework.
+   - EF Core: Designed for cross-platform support and is compatible with various .NET implementations, including .NET Core and .NET 5+.
+
+5. **Database Providers:**
+   - EF: Supports various database providers.
+   - EF Core: Initially had a more limited set of providers, but support has been expanding.
+
+---
+
