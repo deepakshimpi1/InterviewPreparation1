@@ -548,4 +548,135 @@ In this example:
 
 ---
 
-## 
+## Action vs Func
+
+In C#, `Action` and `Func` are both delegate types, but they are used for different purposes.
+
+### Action:
+
+- **Purpose:** Represents a method that performs an action but does not return a value.
+- **Declaration:** `Action<T1, T2, ..., T16>`
+- **Example:**
+  ```csharp
+  Action<string, int> printDetails = (name, age) =>
+  {
+      Console.WriteLine($"Name: {name}, Age: {age}");
+  };
+  ```
+- **Use Case:** Suitable for scenarios where you want to perform an action, like event handlers, callbacks, or methods that don't return a value.
+
+### Func:
+
+- **Purpose:** Represents a method that takes parameters and returns a value.
+- **Declaration:** `Func<T1, T2, ..., TResult>`
+- **Example:**
+  ```csharp
+  Func<int, int, int> add = (a, b) => a + b;
+  ```
+- **Use Case:** Suitable for scenarios where you want to perform a computation and return a value, like LINQ projections, calculations, or any scenario where you need to produce a result.
+
+### Example Combining Action and Func:
+
+```csharp
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Action: Perform an action (print)
+        Action<string> printMessage = message =>
+        {
+            Console.WriteLine($"Message: {message}");
+        };
+
+        // Func: Calculate the length of a string and return the result
+        Func<string, int> stringLength = s => s.Length;
+
+        // Using Action and Func together
+        PrintAndReturnLength("Hello, World!", printMessage, stringLength);
+    }
+
+    static void PrintAndReturnLength(string input, Action<string> printAction, Func<string, int> lengthFunction)
+    {
+        // Perform the action
+        printAction(input);
+
+        // Calculate the length using the function and print the result
+        int length = lengthFunction(input);
+        Console.WriteLine($"Length: {length}");
+    }
+}
+```
+
+In this example, `Action` is used to print a message, and `Func` is used to calculate the length of a string. They are then combined in the `PrintAndReturnLength` method to showcase how both can be used together in a scenario.
+
+---
+
+## Delegate vs Multicast Delegate
+
+In C#, a delegate is a type that represents references to methods(pointer to a function). Delegates in C# provide a way to encapsulate a method, and they can be used to create type-safe function pointers. A multicast delegate is a type of delegate that can hold references to multiple methods, allowing them to be invoked sequentially.
+
+### Delegate:
+
+- **Definition:** A delegate is a reference type that can represent a method signature. It allows you to pass methods as parameters or store them as fields or properties.
+
+- **Declaration:**
+  ```csharp
+  delegate void MyDelegate(int x);
+  ```
+
+- **Example:**
+  ```csharp
+  class Program
+  {
+      static void Main()
+      {
+          MyDelegate myDelegate = MyMethod;
+          myDelegate(42);
+      }
+
+      static void MyMethod(int value)
+      {
+          Console.WriteLine($"MyMethod: {value}");
+      }
+  }
+  ```
+
+### Multicast Delegate:
+
+- **Definition:** A multicast delegate is a delegate that holds references to multiple methods. When a multicast delegate is invoked, all the methods it references are called sequentially.
+
+- **Declaration:**
+  ```csharp
+  delegate void MyMulticastDelegate(int x);
+  ```
+
+- **Example:**
+  ```csharp
+  class Program
+  {
+      static void Main()
+      {
+          MyMulticastDelegate multicastDelegate = Method1;
+          multicastDelegate += Method2;
+
+          // Invoking the multicast delegate calls both Method1 and Method2
+          multicastDelegate(42);
+      }
+
+      static void Method1(int value)
+      {
+          Console.WriteLine($"Method1: {value}");
+      }
+
+      static void Method2(int value)
+      {
+          Console.WriteLine($"Method2: {value}");
+      }
+  }
+  ```
+
+In the example above, `multicastDelegate` is a multicast delegate that holds references to both `Method1` and `Method2`. When the delegate is invoked (`multicastDelegate(42)`), both `Method1` and `Method2` are called in the order they were added to the delegate.
+
+Multicast delegates are particularly useful in scenarios where you want to combine and execute multiple methods sequentially. They are often used in event handling and callback scenarios.
