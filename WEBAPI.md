@@ -69,11 +69,11 @@ When a Web API returns an error in a running production system, developers need 
 14. **Post-Mortem Analysis:**
     - Conduct a post-mortem analysis to review the incident, identify root causes, and determine preventive measures.
     - Document lessons learned and update procedures to avoid similar issues in the future.
+Remember, effective troubleshooting often involves a combination of technical skills, collaboration with other teams, and attention to detail. Communication with users and stakeholders is also important to keep them informed about the investigation and resolution progress.
 
 ---
 
 ## FQDN
-Remember, effective troubleshooting often involves a combination of technical skills, collaboration with other teams, and attention to detail. Communication with users and stakeholders is also important to keep them informed about the investigation and resolution progress.
 
 FQDN stands for Fully Qualified Domain Name. It is a domain name that specifies its exact location in the tree hierarchy of the Domain Name System (DNS). An FQDN includes the host name and all its parent domain names up to the top-level domain (TLD). The format is typically "hostname.domain.tld".
 
