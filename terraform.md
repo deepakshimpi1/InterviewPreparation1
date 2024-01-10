@@ -243,3 +243,9 @@ Q. Which value of the TF_LOG variable provides the most verbose logging?
 > TF_LOG=TRACE terraform plan
 
 - The other logging levels, in order of increasing verbosity, are DEBUG, INFO, WARN, and ERROR.
+
+---
+How to rollback Terraform State?
+
+- You are storing the state file in s3. then apply versioning so it will keep a copy of current state and previous state.
+- Ask someone from SRE to change the state file.
