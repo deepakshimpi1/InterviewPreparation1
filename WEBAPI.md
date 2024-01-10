@@ -255,3 +255,306 @@ Securing a Web API is a critical aspect of development to protect against potent
 18. **Compliance:**
     - Ensure compliance with relevant security standards and regulations (e.g., GDPR, HIPAA) depending on the nature of your application.
 
+---
+
+## AddTransient, AddScoped and AddSingleton Services Differences
+
+Reference: https://stackoverflow.com/questions/38138100/addtransient-addscoped-and-addsingleton-services-differences
+
+https://stackoverflow.com/questions/54889486/addtransientiservice-service-versus-addtransientservice?rq=3
+
+https://stackoverflow.com/questions/57659980/does-dbcontext-registered-as-scoped-or-transient-affect-in-closing-database?noredirect=1&lq=1
+
+
+In .NET Core and ASP.NET Core, `AddTransient`, `AddScoped`, and `AddSingleton` are methods used for registering services with the dependency injection (DI) container. These methods define the lifetime of the service instances created by the container. Here are the key differences between them:
+
+1. **AddTransient:**
+   - **Lifetime:** Transient services are created each time they are requested. A `new instance is provided for each request`.
+   - **Usage:** Suitable for lightweight, stateless services that don't need to store any state between method calls.
+   - **Example:**
+     ```csharp
+     services.AddTransient<IMyService, MyService>();
+     ```
+
+2. **AddScoped:**
+   - **Lifetime:** Scoped services are created once per request within the `scope of the HTTP request`. They are shared across all components that participate in handling the same HTTP request.
+   - **Usage:** Ideal for services that need to maintain state during the lifetime of a single HTTP request, such as handling per-request data or caching.
+   - **Example:**
+     ```csharp
+     services.AddScoped<IScopedService, ScopedService>();
+     ```
+
+3. **AddSingleton:**
+   - **Lifetime:** Singleton services are created once and shared throughout the `application's lifetime`. They are instantiated the first time they are requested and reused for all subsequent requests.
+   - **Usage:** Suitable for stateless or stateful services that are expensive to create and can be shared safely across different parts of the application.
+   - **Example:**
+     ```csharp
+     services.AddSingleton<ISingletonService, SingletonService>();
+     ```
+
+### Comparison Example:
+
+Let's illustrate the difference using a scenario where we have a counter service.
+
+```csharp
+public interface ICounterService
+{
+    int Increment();
+}
+
+public class CounterService : ICounterService
+{
+    private int count;
+
+    public int Increment()
+    {
+        return ++count;
+    }
+}
+```
+
+#### Registering Services:
+
+```csharp
+// Transient
+services.AddTransient<ICounterService, CounterService>();
+
+// Scoped
+services.AddScoped<ICounterService, CounterService>();
+
+// Singleton
+services.AddSingleton<ICounterService, CounterService>();
+```
+
+#### Using Services in a Controller:
+
+```csharp
+public class CounterController : ControllerBase
+{
+    private readonly ICounterService transientCounter;
+    private readonly ICounterService scopedCounter;
+    private readonly ICounterService singletonCounter;
+
+    public CounterController(
+        ICounterService transientCounter,
+        ICounterService scopedCounter,
+        ICounterService singletonCounter)
+    {
+        this.transientCounter = transientCounter;
+        this.scopedCounter = scopedCounter;
+        this.singletonCounter = singletonCounter;
+    }
+
+    [HttpGet("transient")]
+    public IActionResult GetTransientCount()
+    {
+        return Ok(transientCounter.Increment());
+    }
+
+    [HttpGet("scoped")]
+    public IActionResult GetScopedCount()
+    {
+        return Ok(scopedCounter.Increment());
+    }
+
+    [HttpGet("singleton")]
+    public IActionResult GetSingletonCount()
+    {
+        return Ok(singletonCounter.Increment());
+    }
+}
+```
+
+In this example:
+
+- The `transientCounter` will be a new instance for each request.
+- The `scopedCounter` will be shared within the same HTTP request but different for subsequent requests.
+- The `singletonCounter` will be shared across all requests and is the same instance throughout the application's lifetime.
+
+
+### Statelessness in Transient Services:
+
+**Transient services** are created anew for each request or usage. They are stateless in the sense that there is no shared state between different requests or method calls. Each time a transient service is requested, a new instance is created, and any data or state maintained by that instance is specific to that particular request.
+
+`Example:` Consider a service responsible for generating a random number. Each time you request this service, it provides a new random number, and there is no shared state between different requests.
+
+### Statefulness in Scoped Services:
+
+**Scoped services** are created once per scope, typically per HTTP request in the case of a web application. While they maintain state within a single request, they are stateless between different requests. The state is shared within the scope, making them suitable for scenarios where you want to maintain information or state specific to a user's interaction within a request.
+
+`Example:` A shopping cart service in a web application can be scoped. It maintains the state of the user's shopping cart throughout the entire request but is independent of other users' requests.
+
+### Shared State in Singleton Services:
+
+**Singleton services** are created once and shared across the entire application. They are stateful in the sense that any data or state stored in a singleton is shared among all components that use the singleton. This makes them suitable for scenarios where you want to share state or data across various parts of the application.
+
+`Example:` A configuration service that reads application settings from a file can be a singleton. It loads the settings once and provides the same configuration to all parts of the application.
+
+### Statelessness vs. Shared State:
+
+- **Stateless Services:** These are typically transient and don't maintain any state between different requests or method calls. They are suitable for operations where each request is independent and doesn't rely on shared information.
+
+- **Stateful Services:** Scoped services are stateful within a request, while singleton services are stateful across the entire application. They are suitable when you need to maintain shared information, configuration, or state between different parts of the application.
+
+
+### **Note**
+
+### Question: Does DbContext registered as "scoped" or "transient" affect in closing database connection
+
+
+I have a basic understanding in DI in ASP.NET MVC, but there is a question that bothers me a lot. Does it make any difference to register DbContext as 'scoped' or "transient"? Below is some code of a typical mvc application:
+
+```c#
+public class EmployeeController : Controller
+{
+    private EmployeeContext _context;
+
+    public EmployeeController(EmployeeContext context)
+    {
+        _context = context;
+    }
+
+    public ActionResult Index()
+    {
+        return View(context.Employees.ToList());
+    }
+    
+    ...//other action methods that access context's DbSet
+}
+```
+
+Let's say we register EmployeeContext as a transient service. After we run the application, the application is listening any incoming requests. Let's say a http request to default /Home/Index occurs so a new instance of EmployeeController  needs to be created. DI will provide an instance of EmployeeContext to the controller's constructor first. _context is available for all other action methods too and there is not any other place need to create a new EmployeeContext service.
+
+So after the request is finished, the _context is disposed too. Isn't it the same effect as a scoped service? We meant to register it as "transient" service and in the end it works like a "scoped" service. It seems if really doesn't matter if we register Dbcontext as "scoped" or "transient".
+
+
+### Answer: 
+
+If you don't use any other injected services (which are also using your DBContext) there's no difference between scoped and transient.
+
+But if you use other injected services, with "transient" on the DBContext, every service gets his own instance of it. In order to avoid that you should always use "scoped" on the DBContext.
+
+In your example with the following code, with a "transient" EmployeeContext there will be two instances every request:
+```c#
+public class MyService : IMyService 
+{
+ public MyService(EmployeeContext context)
+ {
+  // ...
+ }
+}
+
+public class EmployeeController : Controller
+{
+    private EmployeeContext _context;
+    private _myService;
+
+    public EmployeeController(EmployeeContext context, IMyService myService)
+    {
+        _context = context;
+        _myService = myService;
+    }
+
+    public ActionResult Index()
+    {
+        return View(context.Employees.ToList());
+    }
+
+    ...//other action methods that access context's DbSet
+}
+```
+
+---
+
+## Dependency Injection (DI) in .NET Core
+
+Dependency Injection (DI) in .NET Core is implemented through the built-in dependency injection container provided by the framework. The DI container is responsible for creating and managing the instances of the application's services and making sure that dependencies are resolved and injected where needed. Here's how DI is implemented in .NET Core:
+
+### 1. Service Registration:
+
+In the startup configuration (typically in the `Startup` class), services are registered with the dependency injection container. This is where you specify the relationships between interfaces and their concrete implementations, as well as the lifetime of the service instances.
+
+Example of service registration in `Startup.cs`:
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // Transient Service
+    services.AddTransient<ITransientService, TransientService>();
+
+    // Scoped Service
+    services.AddScoped<IScopedService, ScopedService>();
+
+    // Singleton Service
+    services.AddSingleton<ISingletonService, SingletonService>();
+}
+```
+
+### 2. Dependency Injection:
+
+Once services are registered, the container takes care of injecting dependencies into the constructors of classes that request them. This is often referred to as constructor injection.
+
+Example of dependency injection in a controller:
+
+```csharp
+public class MyController : Controller
+{
+    private readonly ITransientService transientService;
+    private readonly IScopedService scopedService;
+    private readonly ISingletonService singletonService;
+
+    public MyController(
+        ITransientService transientService,
+        IScopedService scopedService,
+        ISingletonService singletonService)
+    {
+        this.transientService = transientService;
+        this.scopedService = scopedService;
+        this.singletonService = singletonService;
+    }
+
+    // Controller actions...
+}
+```
+
+In this example, the controller's constructor is requesting services through its constructor parameters, and the DI container provides the appropriate instances.
+
+### 3. Service Lifetimes:
+
+.NET Core supports three main service lifetimes: Transient, Scoped, and Singleton.
+
+- **Transient:** A new instance is created each time it's requested.
+- **Scoped:** A single instance is created for each scope, typically corresponding to an HTTP request in a web application.
+- **Singleton:** A single instance is created and shared across the entire application's lifetime.
+
+### 4. Automatic Injection:
+
+The DI container can automatically resolve and inject dependencies into controllers, services, middleware, and other components. This is achieved through constructor injection or property injection.
+
+Example of automatic injection in a controller:
+
+```csharp
+public class MyController : Controller
+{
+    // Automatic injection of services through constructor
+    public MyController(ITransientService transientService, IScopedService scopedService)
+    {
+        // ...
+    }
+
+    // Automatic injection of services through property
+    [FromServices]
+    public ISingletonService SingletonService { get; set; }
+
+    // Controller actions...
+}
+```
+
+### 5. Customizing DI Container:
+
+The built-in DI container in .NET Core is flexible, but for more advanced scenarios, you can replace it with a third-party container like Autofac or Ninject. This allows you to customize the DI container behavior.
+
+### Summary:
+
+Dependency Injection in .NET Core simplifies the management of object dependencies by providing a built-in container that resolves and injects dependencies automatically. It promotes modular and testable code, making it easier to maintain and extend applications. The process involves service registration, dependency injection, and specifying the lifetimes of services.
+
