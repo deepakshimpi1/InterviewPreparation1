@@ -62,3 +62,35 @@ There are various types of SSL/TLS certificates, and the choice of certificate d
 6. **Self-Signed Certificates:**
    - Created by the website owner without involving a Certificate Authority (CA).
    - Useful for testing and development environments but not recommended for production.
+
+---
+## Encoding
+ 
+
+- Purpose: Encoding is used to represent data in a specific format for safe and efficient data transmission or storage.
+- Security: Encoding is not designed for security; it's a reversible transformation that doesn't provide confidentiality. It's not meant to keep the data secret.
+- Process: Encoding transforms data into a different format using a scheme that is publicly available. It is meant to ensure data integrity and proper handling but not to secure the data.
+
+There are various types of encoding used in different contexts, each serving specific purposes. Here are some common types of encoding:
+
+1. **URL Encoding (Percent-Encoding):**
+   - **Purpose:** Used to encode special characters in URLs to ensure proper transmission.
+   - **Example:** Space is encoded as `%20`, and other special characters have similar representations.
+
+2. **Base64 Encoding:**
+   - **Purpose:** Converts binary data into ASCII text, commonly used for encoding binary files in text-based formats.
+   - **Example:** `Hello, World!` can be encoded as `SGVsbG8sIFdvcmxkIQ==`.
+
+4. **JSON Encoding:**
+   - **Purpose:** Represents data in JSON format for communication between systems.
+   - **Example:** `{ "name": "John", "age": 25 }`.
+
+5. **UTF-8 Encoding:**
+   - **Purpose:** Represents characters in Unicode format, widely used for character encoding.
+   - **Example:** Unicode character U+00E9 (é) is represented as `C3 A9` in UTF-8.
+ 
+
+ ---
+
+ ## MediaTypeFormatter 
+ - is a class responsible for handling the serialization and deserialization of data between the HTTP request/response and .NET objects.

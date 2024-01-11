@@ -558,3 +558,8 @@ The built-in DI container in .NET Core is flexible, but for more advanced scenar
 
 Dependency Injection in .NET Core simplifies the management of object dependencies by providing a built-in container that resolves and injects dependencies automatically. It promotes modular and testable code, making it easier to maintain and extend applications. The process involves service registration, dependency injection, and specifying the lifetimes of services.
 
+---
+
+## OAuth 2.0:
+
+Purpose: OAuth 2.0 is an authorization framework that enables third-party applications to access resources on behalf of a user without exposing their credentials.
