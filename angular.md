@@ -1220,6 +1220,86 @@ const appRoutes:Routes = [
 export class AppModule{}
 ```
 ---
+## Route Guard
+- A route guard is a service in Angular that can be associated with a route to perform certain actions before allowing or denying access to the route. 
+- It is used to protect routes based on certain conditions, such as user authentication, authorization, or other custom logic.
+
+### CanActivate Guard
+
+- `CanActivate` is a specific route guard in Angular that is used to determine whether a route can be activated. 
+- It is implemented as an interface with a `canActivate` method, which is responsible for deciding if the route should be activated. 
+- The `canActivate` method returns a boolean or an observable/promise of a boolean.
+
+### 1. **Interface Definition:**
+The `CanActivate` interface is part of the `@angular/router` module. It defines a single method:
+
+```typescript
+interface CanActivate {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree;
+}
+```
+
+### 2. **Method Parameters:**
+- `route`: Represents the route that is being activated.
+- `state`: Represents the current router state, including the URL and the router state tree.
+
+### 3. **Return Types:**
+The `canActivate` method returns one of the following:
+- `boolean`: Synchronously allows or denies access to the route.
+- `UrlTree`: Redirects to a different route or returns a `UrlTree` to navigate to a different URL.
+- `Promise<boolean | UrlTree>`: Asynchronously allows or denies access to the route.
+- `Observable<boolean | UrlTree>`: Asynchronously allows or denies access to the route through an observable.
+
+### 4. **Usage:**
+To use the `CanActivate` route guard, you typically create a service class that implements the `CanActivate` interface. This service contains the logic to determine whether the route should be activated. The service is then associated with a route in the route configuration.
+
+### Example Implementation:
+```typescript
+import { Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+
+  constructor(private authService: AuthService) {}
+
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    
+    // Your authentication or authorization logic here
+    if (this.authService.isAuthenticated()) {
+      // If authenticated, allow access to the route
+      return true;
+    } else {
+      // If not authenticated, redirect to the login page
+      return this.router.parseUrl('/login');
+    }
+  }
+}
+```
+
+### Route Configuration:
+```typescript
+const routes: Routes = [
+  {
+    path: 'secure',
+    component: SecureComponent,
+    canActivate: [AuthGuard]
+  },
+  // Other routes...
+];
+```
+
+In this example, the `AuthGuard` service is used as a route guard for the 'secure' route. If the `canActivate` method returns `true`, the navigation to the 'secure' route is allowed. If it returns `false` or a `UrlTree`, the navigation is blocked or redirected accordingly.
+
+This guard is often used to implement authentication checks, ensuring that only authenticated users can access certain routes.
+
+---
 ## RxJS Subjects
 
 Reference: https://www.javatpoint.com/rxjs-subjects
