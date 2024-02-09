@@ -6,3 +6,4 @@
 - Kafka can also save the messages to storage and replicate them across the cluster.
 - Kafka collaborates with Zookeeper to coordinate and synchronize with other services.
 - Apache Spark is well supported by Kafka.
+
