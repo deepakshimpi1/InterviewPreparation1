@@ -46,3 +46,51 @@
 **Note**: There’s one exception. If your container is large and read-heavy and large, that means it has 30,000 or more RUs assigned to it or it is larger than 100 gigabytes.
 
 - If that’s the case, then the partition key should be something that your queries filter on a lot. If your queries filter on user Id a lot, that might be a great partition key. When you choose the right partition key for your Azure Cosmos DB container, you optimize performance. 
+
+
+---
+
+### Consistency level
+
+
+1. **Strong Consistency:**
+   - All replicas of the data are guaranteed to be in sync before a read operation is allowed.
+   - Ensures the highest level of data consistency but may result in longer response times.
+
+2. **Bounded Staleness:**
+   - You can specify a time or a number of operations after which the system guarantees consistency.
+   - Allows for a balance between consistency and performance.
+
+3. **Session Consistency:**
+   - Guarantees consistency within a session, meaning that within the context of a user's session, the data will be consistent.
+   - Suitable for scenarios where a user is interacting with the data and expects their updates to be immediately visible.
+
+4. **Consistent Prefix:**
+   - Guarantees that reads never see out-of-order writes, but the system might not have the latest write.
+   - Provides a compromise between consistency and availability.
+
+5. **Eventual Consistency:**
+   - Guarantees that, given enough time, all replicas will converge to the same state.
+   - Offers the highest level of availability and is suitable for scenarios where eventual consistency is acceptable.
+
+Choosing the appropriate consistency level depends on the specific requirements of your application, balancing the need for real-time consistency with performance and availability considerations.
+
+### Example
+Let's use a simple scenario of a social media application where users can post and view messages. Assume the data is distributed across multiple replicas.
+
+1. **Strong Consistency:**
+   - User A posts a message. Before allowing User B to see the message, all replicas across the distributed database must be updated to reflect the new post. This ensures that User B will always see the latest post.
+
+2. **Bounded Staleness:**
+   - You specify a time limit, say 5 seconds. If a read operation is requested, the system guarantees that the data returned is no more than 5 seconds old. This allows for a balance between having relatively fresh data and minimizing the impact on read performance.
+
+3. **Session Consistency:**
+   - User C logs in and starts a session. During this session, any posts or updates made by User C will be immediately visible to them. However, if another user, say User D, views the posts during the same time, they might not see the most recent updates until they start their own session.
+
+4. **Consistent Prefix:**
+   - Imagine a scenario where users are posting messages, and each message has a sequential identifier. The system ensures that, while the messages may not be completely up-to-date, any read operation will see a consistent order of messages, maintaining the sequence.
+
+5. **Eventual Consistency:**
+   - User E posts a message. Even though the replicas may not be immediately updated, over time, all replicas will converge to the same state, and eventually, everyone will see the new message. This allows for high availability and quick responses at the cost of immediate consistency.
+
+![Image](https://learn.microsoft.com/en-us/training/wwl-azure/explore-azure-cosmos-db/media/five-consistency-levels.png)
