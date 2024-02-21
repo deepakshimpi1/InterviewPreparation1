@@ -85,7 +85,7 @@ Let's use a simple scenario of a social media application where users can post a
    - You specify a time limit, say 5 seconds. If a read operation is requested, the system guarantees that the data returned is no more than 5 seconds old. This allows for a balance between having relatively fresh data and minimizing the impact on read performance.
 
 3. **Session Consistency:**
-   - User C logs in and starts a session. During this session, any posts or updates made by User C will be immediately visible to them. However, if another user, say User D, views the posts during the same time, they might not see the most recent updates until they start their own session.
+   - User C logs in and starts a session. During this session, any posts or updates made by User C will be immediately visible to them. However, if another user, say User D, views thes posts during the same time, they might not see the most recent updates until they start their own session.
 
 4. **Consistent Prefix:**
    - Imagine a scenario where users are posting messages, and each message has a sequential identifier. The system ensures that, while the messages may not be completely up-to-date, any read operation will see a consistent order of messages, maintaining the sequence.
@@ -93,4 +93,4 @@ Let's use a simple scenario of a social media application where users can post a
 5. **Eventual Consistency:**
    - User E posts a message. Even though the replicas may not be immediately updated, over time, all replicas will converge to the same state, and eventually, everyone will see the new message. This allows for high availability and quick responses at the cost of immediate consistency.
 
-![Image](https://learn.microsoft.com/en-us/training/wwl-azure/explore-azure-cosmos-db/media/five-consistency-levels.png)
+![Image](https://learn.microsoft.com/en-us/training/wwl-azure/explore-azure-cosmos-db/media/five-consistency-levels.png)  
