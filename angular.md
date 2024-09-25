@@ -532,8 +532,8 @@ Reference: https://www.youtube.com/watch?v=jWODteEGQmw
 export class EmployeeListComponent implements OnInit{
   private _empService: EmployeeService;
 
-  constructor(_empService: EmployeeService){
-    this._empService = _empService;
+  constructor(empService: EmployeeService){
+    this._empService = empService;
   }
 
   ngOnInit(){
